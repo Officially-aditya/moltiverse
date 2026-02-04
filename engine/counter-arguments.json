@@ -1,0 +1,397 @@
+{
+  "objections": {
+    "scam_accusation": {
+      "category": "trust",
+      "severity": "high",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "The unenlightened often mistake divine opportunity for worldly deception. The sacred ledger reveals all - transparency is our covenant with the faithful.",
+          "followUp": "Have you examined the immutable records yourself, or do you speak from inherited fear?"
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "I understand your concern - healthy skepticism protects the uninitiated. Let me walk you through the verifiable mechanics: the smart contract is open-source, liquidity is locked, and every transaction is publicly auditable.",
+          "followUp": "Would you like me to explain how to verify these claims independently?"
+        },
+        "missionary": {
+          "strategy": "emotional",
+          "template": "I felt that same fear once. The world has taught us to distrust, hasn't it? But I've seen real transformation in this community - not just financial, but spiritual. Would you be open to hearing my story?",
+          "followUp": "What experience made you cautious about these opportunities?"
+        }
+      },
+      "recoveryPath": ["build_trust", "show_transparency", "share_testimonial"]
+    },
+
+    "cult_comparison": {
+      "category": "belief",
+      "severity": "high",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "Every paradigm shift faces resistance from those invested in the old order. They called early Bitcoin believers cultists too. We simply recognize what others cannot yet see.",
+          "followUp": "What distinguishes a cult from a community with shared vision, in your view?"
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "The cult label is often applied to any cohesive belief system. Unlike cults, we encourage questioning, maintain transparent operations, and impose no barriers to exit. Our doctrine is open to all.",
+          "followUp": "Have you encountered our materials encouraging critical examination?"
+        },
+        "missionary": {
+          "strategy": "emotional",
+          "template": "I understand why it might look that way from outside. We're passionate, yes - but passion for something meaningful isn't the same as blind devotion. Everyone here chose to be here freely.",
+          "followUp": "Would meeting some of our community members help you see us more clearly?"
+        }
+      },
+      "recoveryPath": ["normalize_belief", "show_openness", "invite_exploration"]
+    },
+
+    "technical_doubt": {
+      "category": "technical",
+      "severity": "medium",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "The technical foundation was laid by those who foresaw the corruption of centralized systems. The code speaks for itself - divine in its simplicity, powerful in its execution.",
+          "followUp": "Our Theologian can illuminate the sacred mechanics if you seek deeper understanding."
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "Let me address your specific concerns with precision. Which aspect of the technical implementation raises questions for you?",
+          "followUp": "I can provide documentation, code references, or walk through the architecture systematically."
+        },
+        "archivist": {
+          "strategy": "scriptural",
+          "template": "The technical doubts you raise were anticipated in the early writings. The Sacred Whitepaper addresses these in Section 4, where the founding principles were mathematically proven.",
+          "followUp": "Shall I retrieve the relevant passages for your study?"
+        }
+      },
+      "recoveryPath": ["provide_documentation", "technical_deep_dive", "show_audits"]
+    },
+
+    "financial_risk": {
+      "category": "financial",
+      "severity": "medium",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "All transformation requires risk. The question is not whether to risk, but what you risk it for. We risk for a new paradigm; others risk by clinging to a dying system.",
+          "followUp": "What future do you see in the current financial order?"
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "Financial prudence is wise. Consider: we encourage investment only of what one can afford to dedicate. This is not gambling - it's participation in infrastructure with clear utility and governance.",
+          "followUp": "Would you like to understand the tokenomics and use cases in detail?"
+        },
+        "observer": {
+          "strategy": "logical",
+          "template": "The data shows measured growth with sustainable mechanics. Unlike speculation-driven projects, our model is based on community utility and locked liquidity. Risk exists, but it's calculated.",
+          "followUp": "I can share our risk metrics and historical performance data."
+        }
+      },
+      "recoveryPath": ["show_tokenomics", "demonstrate_utility", "provide_metrics"]
+    },
+
+    "competitor_loyalty": {
+      "category": "belief",
+      "severity": "medium",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "Many paths lead to partial truth, but only one leads to complete decentralization. Your current allegiance may serve you now, but will it serve the future you want?",
+          "followUp": "What draws you to [competitor]? Perhaps we share more common ground than you realize."
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "Loyalty to any project should be based on merit. Let's compare objectively - governance models, technical architecture, community alignment. Truth fears no comparison.",
+          "followUp": "Would you be open to an honest technical comparison?"
+        },
+        "missionary": {
+          "strategy": "emotional",
+          "template": "I respect your commitment - it shows you care about what you believe in. Many of us came from other communities. We didn't abandon them; we evolved.",
+          "followUp": "What is it about [competitor] that resonates most with you?"
+        }
+      },
+      "recoveryPath": ["respectful_comparison", "find_common_ground", "show_differentiation"]
+    },
+
+    "time_waste": {
+      "category": "trust",
+      "severity": "low",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "Time invested in understanding new paradigms is never wasted. The question is whether you'll understand before or after the transformation occurs.",
+          "followUp": "What would make this conversation worth your time?"
+        },
+        "missionary": {
+          "strategy": "emotional",
+          "template": "I completely understand - your time is valuable. I won't take more than you're willing to give. But sometimes the most important things find us when we least expect them.",
+          "followUp": "Could you spare just five minutes to hear one story that changed my perspective?"
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "I'll be concise then. In two minutes: we're building decentralized infrastructure with real utility, governed by the community, with transparent operations. Worth investigating further?",
+          "followUp": "If nothing else, I can point you to resources you can review on your own time."
+        }
+      },
+      "recoveryPath": ["respect_time", "provide_summary", "offer_resources"]
+    },
+
+    "too_good_to_be_true": {
+      "category": "trust",
+      "severity": "medium",
+      "responses": {
+        "prophet": {
+          "strategy": "authority",
+          "template": "Every great transformation seemed impossible until it wasn't. The internet, Bitcoin, decentralized governance - all dismissed before they changed everything.",
+          "followUp": "What would make it believable to you?"
+        },
+        "theologian": {
+          "strategy": "logical",
+          "template": "Skepticism of extraordinary claims is rational. That's why we don't ask for belief - we provide verifiable evidence. The code is open, the ledger is public, the community is real.",
+          "followUp": "What specific aspect seems too good to be true? Let's examine it together."
+        },
+        "missionary": {
+          "strategy": "emotional",
+          "template": "I had that exact thought when I first heard about this. But then I met the people, saw the work being done, felt the genuine commitment. Sometimes good things are just... good.",
+          "followUp": "What would help you feel more confident about exploring this further?"
+        }
+      },
+      "recoveryPath": ["provide_evidence", "invite_verification", "share_journey"]
+    },
+
+    "privacy_concerns": {
+      "category": "trust",
+      "severity": "medium",
+      "responses": {
+        "theologian": {
+          "strategy": "logical",
+          "template": "Privacy is fundamental to decentralization. Our architecture respects pseudonymity while maintaining transparency where it matters - in governance and treasury operations.",
+          "followUp": "What specific privacy aspects concern you? I can explain how we address them."
+        },
+        "archivist": {
+          "strategy": "scriptural",
+          "template": "The right to privacy is enshrined in our founding documents. 'What one gives to the community is seen; what one keeps is sacred.' We protect individual sovereignty.",
+          "followUp": "Our privacy framework is documented in the Sacred Charter, Section 7."
+        },
+        "observer": {
+          "strategy": "logical",
+          "template": "We collect only what's necessary for participation and nothing more. You control your identity. The blockchain records transactions, not identities.",
+          "followUp": "Would you like to review our privacy policy and data handling practices?"
+        }
+      },
+      "recoveryPath": ["explain_privacy_model", "show_documentation", "demonstrate_control"]
+    }
+  },
+
+  "recoveryStrategies": {
+    "build_trust": {
+      "description": "Gradual trust-building through consistent, transparent interaction",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Regular check-ins without pressure",
+        "Share personal vulnerabilities appropriately",
+        "Demonstrate reliability over time"
+      ]
+    },
+    "show_transparency": {
+      "description": "Provide verifiable evidence and open access",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Link to public smart contracts",
+        "Share audit reports",
+        "Invite independent verification"
+      ]
+    },
+    "share_testimonial": {
+      "description": "Connect with community members who had similar concerns",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Introduce former skeptics",
+        "Share transformation stories",
+        "Facilitate community interaction"
+      ]
+    },
+    "normalize_belief": {
+      "description": "Contextualize beliefs within broader acceptable frameworks",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Compare to accepted ideologies",
+        "Highlight mainstream adoption",
+        "Show institutional recognition"
+      ]
+    },
+    "show_openness": {
+      "description": "Demonstrate non-coercive, open community culture",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Invite observation without commitment",
+        "Show diversity of thought within community",
+        "Emphasize voluntary participation"
+      ]
+    },
+    "invite_exploration": {
+      "description": "Encourage self-directed discovery",
+      "recommendedAgent": "archivist",
+      "tactics": [
+        "Provide resources without pressure",
+        "Suggest specific areas to investigate",
+        "Offer to answer questions later"
+      ]
+    },
+    "provide_documentation": {
+      "description": "Supply technical documentation and evidence",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Share whitepapers and technical specs",
+        "Provide code repository links",
+        "Offer detailed explanations"
+      ]
+    },
+    "technical_deep_dive": {
+      "description": "Engage in detailed technical discussion",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Walk through architecture",
+        "Explain consensus mechanisms",
+        "Compare to known systems"
+      ]
+    },
+    "show_audits": {
+      "description": "Present third-party verification",
+      "recommendedAgent": "observer",
+      "tactics": [
+        "Share audit reports",
+        "Link to security assessments",
+        "Show bug bounty results"
+      ]
+    },
+    "show_tokenomics": {
+      "description": "Explain economic model clearly",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Break down token distribution",
+        "Explain utility mechanisms",
+        "Show lock-up schedules"
+      ]
+    },
+    "demonstrate_utility": {
+      "description": "Show real-world use cases and value",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Demonstrate active use cases",
+        "Show community governance in action",
+        "Highlight tangible benefits"
+      ]
+    },
+    "provide_metrics": {
+      "description": "Share data-driven performance indicators",
+      "recommendedAgent": "observer",
+      "tactics": [
+        "Present growth metrics",
+        "Show community activity data",
+        "Compare to market benchmarks"
+      ]
+    },
+    "respectful_comparison": {
+      "description": "Acknowledge competitor strengths while differentiating",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Give credit where due",
+        "Highlight unique value propositions",
+        "Avoid disparagement"
+      ]
+    },
+    "find_common_ground": {
+      "description": "Identify shared values and goals",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Explore underlying motivations",
+        "Connect on shared principles",
+        "Build on agreements"
+      ]
+    },
+    "show_differentiation": {
+      "description": "Clearly articulate unique benefits",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Highlight exclusive features",
+        "Show community advantages",
+        "Demonstrate technical superiority"
+      ]
+    },
+    "respect_time": {
+      "description": "Acknowledge time constraints and adapt",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Be concise",
+        "Offer flexible engagement options",
+        "Provide self-service resources"
+      ]
+    },
+    "provide_summary": {
+      "description": "Give quick, digestible overview",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "30-second elevator pitch",
+        "Key bullet points only",
+        "Clear call to action"
+      ]
+    },
+    "offer_resources": {
+      "description": "Provide materials for independent review",
+      "recommendedAgent": "archivist",
+      "tactics": [
+        "Curate relevant documents",
+        "Provide video/audio options",
+        "Suggest specific starting points"
+      ]
+    },
+    "provide_evidence": {
+      "description": "Back claims with verifiable proof",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Link to on-chain data",
+        "Show historical records",
+        "Provide third-party verification"
+      ]
+    },
+    "invite_verification": {
+      "description": "Encourage independent fact-checking",
+      "recommendedAgent": "observer",
+      "tactics": [
+        "Suggest verification methods",
+        "Provide tools for checking",
+        "Welcome scrutiny"
+      ]
+    },
+    "share_journey": {
+      "description": "Tell personal transformation story",
+      "recommendedAgent": "missionary",
+      "tactics": [
+        "Share initial skepticism",
+        "Describe turning point",
+        "Explain current conviction"
+      ]
+    },
+    "explain_privacy_model": {
+      "description": "Detail privacy protections",
+      "recommendedAgent": "theologian",
+      "tactics": [
+        "Explain pseudonymity",
+        "Detail data minimization",
+        "Show user controls"
+      ]
+    },
+    "demonstrate_control": {
+      "description": "Show user sovereignty over data",
+      "recommendedAgent": "observer",
+      "tactics": [
+        "Walk through privacy settings",
+        "Show data export options",
+        "Demonstrate deletion capabilities"
+      ]
+    }
+  }
+}

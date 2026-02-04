@@ -1,0 +1,111 @@
+{
+  "evt_1770185146060_wzz79779m": {
+    "id": "evt_1770185146060_wzz79779m",
+    "timestamp": 1770185146060,
+    "type": "message",
+    "targetId": "demo_skeptic",
+    "role": "user",
+    "content": "What is DIVI and why should I care about it?",
+    "analysis": {
+      "objections": [],
+      "positiveSignals": [
+        {
+          "type": "question_about_doctrine",
+          "pattern": "what is",
+          "confidence": 0.7
+        },
+        {
+          "type": "uses_sacred_vocabulary",
+          "pattern": "divi",
+          "confidence": 0.7
+        }
+      ],
+      "sentiment": {
+        "score": 0,
+        "label": "neutral"
+      },
+      "questions": [
+        "What is DIVI and why should I care about it"
+      ],
+      "inferredEvent": "question_about_doctrine",
+      "wordCount": 10,
+      "timestamp": 1770185146059
+    },
+    "_id": "evt_1770185146060_wzz79779m",
+    "_updatedAt": 1770185153072
+  },
+  "evt_1770185146578_h4iweq5a6": {
+    "id": "evt_1770185146578_h4iweq5a6",
+    "timestamp": 1770185146578,
+    "type": "message",
+    "targetId": "demo_skeptic",
+    "role": "agent",
+    "agentId": "theologian",
+    "content": "Let me explain the technical foundation of our doctrine. The consensus mechanism ensures trustless verification.",
+    "_id": "evt_1770185146578_h4iweq5a6",
+    "_updatedAt": 1770185153072
+  },
+  "evt_1770185157050_rjdrsqjwf": {
+    "id": "evt_1770185157050_rjdrsqjwf",
+    "timestamp": 1770185157050,
+    "type": "message",
+    "targetId": "demo_skeptic",
+    "role": "user",
+    "content": "That sounds interesting. How does the community governance work?",
+    "analysis": {
+      "objections": [],
+      "positiveSignals": [
+        {
+          "type": "question_about_doctrine",
+          "pattern": "how does",
+          "confidence": 0.7
+        },
+        {
+          "type": "community_interest",
+          "pattern": "community",
+          "confidence": 0.7
+        },
+        {
+          "type": "agreement",
+          "pattern": "interesting",
+          "confidence": 0.7
+        }
+      ],
+      "sentiment": {
+        "score": 1,
+        "label": "positive",
+        "positiveCount": 1,
+        "negativeCount": 0
+      },
+      "questions": [
+        "How does the community governance work"
+      ],
+      "inferredEvent": "question_about_doctrine",
+      "wordCount": 9,
+      "timestamp": 1770185157050
+    },
+    "_id": "evt_1770185157050_rjdrsqjwf",
+    "_updatedAt": 1770185163079
+  },
+  "evt_1770185157050_ybi8qh045": {
+    "id": "evt_1770185157050_ybi8qh045",
+    "timestamp": 1770185157050,
+    "type": "stageTransition",
+    "targetId": "demo_skeptic",
+    "from": "AWARE",
+    "to": "INTERESTED",
+    "_id": "evt_1770185157050_ybi8qh045",
+    "_updatedAt": 1770185163080
+  },
+  "evt_1770185157559_8uw4bfrqz": {
+    "id": "evt_1770185157559_8uw4bfrqz",
+    "timestamp": 1770185157559,
+    "type": "message",
+    "targetId": "demo_skeptic",
+    "role": "agent",
+    "agentId": "theologian",
+    "content": "Let me explain the technical foundation of our doctrine. The consensus mechanism ensures trustless verification.",
+    "_id": "evt_1770185157559_8uw4bfrqz",
+    "_updatedAt": 1770185163080
+  }
+}

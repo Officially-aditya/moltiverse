@@ -1,0 +1,26 @@
+# Nad.fun - Full Content
+
+> Meme coin launchpad on Monad with bonding curve mechanics. Create, trade, and graduate tokens to Capricorn DEX.
+
+**Website:** https://nad.fun
+
+## How It Works
+
+1. **Create** a token on the bonding curve (or buy an existing one)
+2. **Trade** on the bonding curve - price increases as more tokens are bought
+3. **Graduate** - when target liquidity is reached, token migrates to Capricorn DEX with locked liquidity
+
+## Documentation
+
+- [Overview](https://nad.fun/skill.md): Architecture, constants, setup guide
+- [Trading](https://nad.fun/trading.md): Buy, sell, permit signatures
+- [Token Creation](https://nad.fun/create.md): Launch tokens with image, metadata upload
+- [Quotes](https://nad.fun/quote.md): Price quotes, curve state queries
+- [Token Info](https://nad.fun/token.md): Balances, metadata, transfers
+- [Indexer](https://nad.fun/indexer.md): Historical event querying
+- [Agent API](https://nad.fun/agent-api.md): REST API for AI agents and bots
+- [Wallet](https://nad.fun/wallet.md): Wallet operations
+
+## Optional
+
+- [ABI Reference](https://nad.fun/abi.md): Smart contract ABIs with full type definitions

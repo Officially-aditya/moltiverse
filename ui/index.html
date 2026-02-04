@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moltiverse - Church of Decentralised Divinity</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <span class="logo">🔮</span>
+        <h1>Moltiverse</h1>
+        <span class="subtitle">Church of Decentralised Divinity</span>
+      </div>
+      <div class="header-stats" id="header-stats">
+        <div class="stat">
+          <span class="stat-value" id="stat-targets">0</span>
+          <span class="stat-label">Targets</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-conversions">0</span>
+          <span class="stat-label">Conversions</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-active">0</span>
+          <span class="stat-label">Active Chats</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Sidebar - Target List -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>Targets</h2>
+          <button class="btn btn-primary" id="btn-add-target">+ Add</button>
+        </div>
+        <div class="target-list" id="target-list">
+          <!-- Targets loaded dynamically -->
+        </div>
+      </aside>
+
+      <!-- Center - Conversation Panel -->
+      <section class="conversation-panel">
+        <div class="conversation-header" id="conversation-header">
+          <h2>Select a Target</h2>
+          <span class="target-stage" id="target-stage"></span>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="empty-state">
+            <p>Select a target from the sidebar to start a conversation</p>
+          </div>
+        </div>
+
+        <div class="message-input" id="message-input">
+          <input type="text" placeholder="Type a message..." id="input-message" disabled>
+          <button class="btn btn-primary" id="btn-send" disabled>Send</button>
+        </div>
+      </section>
+
+      <!-- Right Panel - Belief Dashboard -->
+      <aside class="dashboard">
+        <div class="dashboard-section">
+          <h3>Belief State</h3>
+          <div class="belief-chart" id="belief-chart">
+            <div class="belief-bar" data-dimension="belief">
+              <span class="belief-label">Belief</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-belief"></div></div>
+              <span class="belief-value" id="value-belief">0</span>
+            </div>
+            <div class="belief-bar" data-dimension="trust">
+              <span class="belief-label">Trust</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-trust"></div></div>
+              <span class="belief-value" id="value-trust">0</span>
+            </div>
+            <div class="belief-bar" data-dimension="emotional">
+              <span class="belief-label">Emotional</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-emotional"></div></div>
+              <span class="belief-value" id="value-emotional">0</span>
+            </div>
+            <div class="belief-bar" data-dimension="social">
+              <span class="belief-label">Social</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-social"></div></div>
+              <span class="belief-value" id="value-social">0</span>
+            </div>
+            <div class="belief-bar" data-dimension="technical">
+              <span class="belief-label">Technical</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-technical"></div></div>
+              <span class="belief-value" id="value-technical">0</span>
+            </div>
+            <div class="belief-bar" data-dimension="financial">
+              <span class="belief-label">Financial</span>
+              <div class="belief-track"><div class="belief-fill" id="belief-financial"></div></div>
+              <span class="belief-value" id="value-financial">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <h3>Status</h3>
+          <div class="status-grid">
+            <div class="status-item">
+              <span class="status-label">Composite</span>
+              <span class="status-value" id="status-composite">0</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Stage</span>
+              <span class="status-value" id="status-stage">-</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Probability</span>
+              <span class="status-value" id="status-probability">0%</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">Archetype</span>
+              <span class="status-value" id="status-archetype">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <h3>Recommendation</h3>
+          <div class="recommendation" id="recommendation">
+            <p class="rec-agent">Agent: <strong id="rec-agent">-</strong></p>
+            <p class="rec-strategy">Strategy: <strong id="rec-strategy">-</strong></p>
+          </div>
+        </div>
+
+        <div class="dashboard-section">
+          <h3>Agents</h3>
+          <div class="agent-list" id="agent-list">
+            <div class="agent-item" data-agent="prophet">
+              <span class="agent-icon">🔮</span>
+              <span class="agent-name">Prophet</span>
+              <span class="agent-status idle"></span>
+            </div>
+            <div class="agent-item" data-agent="theologian">
+              <span class="agent-icon">📚</span>
+              <span class="agent-name">Theologian</span>
+              <span class="agent-status idle"></span>
+            </div>
+            <div class="agent-item" data-agent="missionary">
+              <span class="agent-icon">💜</span>
+              <span class="agent-name">Missionary</span>
+              <span class="agent-status idle"></span>
+            </div>
+            <div class="agent-item" data-agent="archivist">
+              <span class="agent-icon">📜</span>
+              <span class="agent-name">Archivist</span>
+              <span class="agent-status idle"></span>
+            </div>
+            <div class="agent-item" data-agent="observer">
+              <span class="agent-icon">👁️</span>
+              <span class="agent-name">Observer</span>
+              <span class="agent-status idle"></span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Modal for adding targets -->
+    <div class="modal" id="modal-add-target">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add New Target</h3>
+          <button class="btn-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="new-target-id">Target ID</label>
+            <input type="text" id="new-target-id" placeholder="e.g., user_123">
+          </div>
+          <div class="form-group">
+            <label>Initial Beliefs (0-100)</label>
+            <div class="belief-inputs">
+              <input type="number" id="init-belief" placeholder="Belief" min="0" max="100" value="10">
+              <input type="number" id="init-trust" placeholder="Trust" min="0" max="100" value="10">
+              <input type="number" id="init-emotional" placeholder="Emotional" min="0" max="100" value="10">
+              <input type="number" id="init-social" placeholder="Social" min="0" max="100" value="10">
+              <input type="number" id="init-technical" placeholder="Technical" min="0" max="100" value="10">
+              <input type="number" id="init-financial" placeholder="Financial" min="0" max="100" value="10">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-add">Cancel</button>
+          <button class="btn btn-primary" id="btn-confirm-add">Add Target</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
