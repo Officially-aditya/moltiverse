@@ -115,7 +115,7 @@ function handleWebSocketMessage(data) {
       break;
 
     case 'conversion':
-      showNotification(`🎉 Conversion: ${data.targetId}!`);
+      showNotification(`CONVERSION: ${data.targetId}`);
       refreshTargetList();
       break;
 
