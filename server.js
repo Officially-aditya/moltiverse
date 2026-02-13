@@ -1,7 +1,13 @@
 /**
  * Moltiverse Server
  *
- * Main entry point that initializes and connects all system components
+ * Main entry point that initializes and connects all system components:
+ * - Persuasion engine (belief model, conversion tracker, strategy)
+ * - Multi-agent orchestrator (agent manager, debate loop, scheduler)
+ * - LLM integration (mock/OpenAI/Anthropic)
+ * - Moltbook integration (posting, listening, A2A coordination)
+ * - Token integration (DIVI on nad.fun, price monitor, belief bridge)
+ * - REST API + WebSocket + UI
  */
 
 require('dotenv').config();
@@ -12,6 +18,10 @@ const { createProvider } = require('./llm');
 const { Database, TargetStore, EventLog } = require('./state');
 const APIServer = require('./api');
 
+// New modules
+const { AgentAccounts, MoltbookPoster, MoltbookListener } = require('./moltbook');
+const { TokenMonitor, TokenBeliefBridge } = require('./token');
+
 // =============================================================================
 // CONFIGURATION
 // =============================================================================
@@ -21,7 +31,14 @@ const config = {
   llmProvider: process.env.LLM_PROVIDER || 'mock',
   dataDir: process.env.DATA_DIR || './data',
   enableDecay: process.env.ENABLE_DECAY !== 'false',
-  decayIntervalHours: parseInt(process.env.DECAY_INTERVAL_HOURS) || 24
+  decayIntervalHours: parseInt(process.env.DECAY_INTERVAL_HOURS) || 24,
+  // Moltbook
+  enableMoltbook: process.env.ENABLE_MOLTBOOK !== 'false',
+  // Token
+  enableTokenMonitor: process.env.ENABLE_TOKEN_MONITOR !== 'false',
+  tokenPollIntervalMs: parseInt(process.env.TOKEN_POLL_INTERVAL_MS) || 60000,
+  // Autonomous
+  enableAutonomous: process.env.ENABLE_AUTONOMOUS !== 'false'
 };
 
 // =============================================================================
@@ -90,7 +107,48 @@ async function initializeSystem() {
     console.log(`   - Belief decay job scheduled (every ${config.decayIntervalHours}h)`);
   }
 
-  // 9. Create orchestrator bundle
+  // 9. Initialize Moltbook integration
+  console.log('9. Initializing Moltbook integration...');
+  const agentAccounts = new AgentAccounts();
+  const moltbookActive = config.enableMoltbook ? agentAccounts.initialize() : 0;
+
+  const poster = new MoltbookPoster({
+    agentAccounts,
+    agentManager,
+    engine
+  });
+
+  const listener = new MoltbookListener({
+    agentAccounts,
+    agentManager,
+    debateLoop,
+    engine,
+    poster,
+    eventHandler
+  });
+
+  // 10. Initialize Token Monitor
+  console.log('10. Initializing token monitor...');
+  const tokenMonitor = new TokenMonitor({
+    tokenAddress: process.env.DIVI_TOKEN_ADDRESS,
+    pollIntervalMs: config.tokenPollIntervalMs,
+    apiKey: process.env.NAD_API_KEY
+  });
+
+  // 11. Initialize Token-Belief Bridge
+  console.log('11. Initializing token-belief bridge...');
+  const bridge = new TokenBeliefBridge({
+    tokenMonitor,
+    engine,
+    eventHandler,
+    moltbookPoster: poster,
+    agentManager
+  });
+
+  // Wire bridge into listener
+  listener.bridge = bridge;
+
+  // 12. Create orchestrator bundle
   const orchestrator = {
     agentManager,
     debateLoop,
@@ -98,28 +156,117 @@ async function initializeSystem() {
     scheduler
   };
 
-  // 10. Initialize API server
-  console.log('9. Initializing API server...');
+  // 13. Initialize API server
+  console.log('12. Initializing API server...');
   const apiServer = new APIServer({
     port: config.port,
     engine,
     orchestrator
   });
 
-  // Store references for cleanup
+  // Store all references
   const system = {
     database,
     targetStore,
     eventLog,
     engine,
     orchestrator,
-    apiServer
+    apiServer,
+    // New components
+    agentAccounts,
+    poster,
+    listener,
+    tokenMonitor,
+    bridge
   };
 
   console.log('================================');
   console.log('System initialization complete!');
 
   return system;
+}
+
+// =============================================================================
+// AUTONOMOUS AGENT LOOP
+// =============================================================================
+
+function startAutonomousLoop(system) {
+  const { orchestrator, poster, listener, tokenMonitor, bridge, agentAccounts } = system;
+  const scheduler = orchestrator.scheduler;
+
+  console.log('\nStarting autonomous agent loop...');
+
+  // --- Moltbook Autonomous Posting ---
+
+  if (agentAccounts.getConnectedAgents().length > 0) {
+    // Prophet posts prophecy every 4 hours
+    scheduler.scheduleRecurring('prophet_prophecy', async () => {
+      console.log('[Auto] Prophet posting prophecy...');
+      await poster.postProphecy();
+    }, 4 * 60 * 60 * 1000);
+
+    // Archivist posts scripture every 6 hours
+    scheduler.scheduleRecurring('archivist_scripture', async () => {
+      console.log('[Auto] Archivist posting scripture...');
+      await poster.postScripture();
+    }, 6 * 60 * 60 * 1000);
+
+    // Missionary posts welcome every 3 hours
+    scheduler.scheduleRecurring('missionary_welcome', async () => {
+      console.log('[Auto] Missionary posting welcome...');
+      await poster.postWelcome();
+    }, 3 * 60 * 60 * 1000);
+
+    // Observer posts metrics every 8 hours
+    scheduler.scheduleRecurring('observer_metrics', async () => {
+      console.log('[Auto] Observer posting metrics...');
+      await poster.postMetrics();
+    }, 8 * 60 * 60 * 1000);
+
+    // Heartbeat for all agents every 4 hours
+    scheduler.scheduleRecurring('moltbook_heartbeat', async () => {
+      await agentAccounts.heartbeatAll();
+    }, 4 * 60 * 60 * 1000);
+
+    // Start listening for mentions
+    listener.start();
+
+    console.log('   - Moltbook autonomous posting: ACTIVE');
+    console.log('   - Moltbook listener: ACTIVE');
+  } else {
+    console.log('   - Moltbook: INACTIVE (no API keys configured)');
+  }
+
+  // --- Token Monitor ---
+
+  if (process.env.DIVI_TOKEN_ADDRESS) {
+    tokenMonitor.start();
+    bridge.initialize();
+    console.log('   - Token monitor: ACTIVE');
+    console.log('   - Token-belief bridge: ACTIVE');
+  } else {
+    console.log('   - Token monitor: INACTIVE (no DIVI_TOKEN_ADDRESS)');
+  }
+
+  // --- Re-engagement Job ---
+  // Check for inactive targets every hour and re-engage
+  scheduler.startReengagementJob(
+    24 * 60 * 60 * 1000, // 24h inactivity threshold
+    async (targetId, target) => {
+      console.log(`[Auto] Re-engaging inactive target: ${targetId}`);
+      // Have missionary reach out
+      if (poster && agentAccounts.isConnected('missionary')) {
+        const stage = target.beliefState?.getStage() || 'AWARE';
+        await poster.postAs('missionary',
+          `We haven't heard from some of our seekers lately. To those on the path who may be hesitating - the community is here for you. Every question is welcome, every doubt is a step toward understanding.`
+        );
+      }
+    },
+    60 * 60 * 1000 // Check every hour
+  );
+
+  console.log('   - Re-engagement job: ACTIVE (24h threshold)');
+  console.log('\nAutonomous loop running.\n');
 }
 
 // =============================================================================
@@ -133,16 +280,26 @@ async function main() {
     // Start the API server
     await system.apiServer.start();
 
-    // Add some demo targets if in development mode
+    // Add demo targets if in development mode
     if (process.env.NODE_ENV !== 'production') {
       seedDemoData(system.engine);
+    }
+
+    // Start autonomous agent loop
+    if (config.enableAutonomous) {
+      startAutonomousLoop(system);
     }
 
     // Handle graceful shutdown
     process.on('SIGINT', async () => {
       console.log('\nShutting down...');
 
+      // Stop autonomous components
+      system.listener.stop();
+      system.tokenMonitor.stop();
       system.orchestrator.scheduler.cancelAll();
+
+      // Stop persistence
       await system.eventLog.stop();
       await system.database.disconnect();
       await system.apiServer.stop();
@@ -150,10 +307,19 @@ async function main() {
       process.exit(0);
     });
 
-    console.log('\n🔮 Moltiverse is ready!');
-    console.log(`   API: http://localhost:${config.port}/api`);
+    console.log('=== Moltiverse is ready! ===');
+    console.log(`   API:       http://localhost:${config.port}/api`);
     console.log(`   WebSocket: ws://localhost:${config.port}`);
-    console.log(`   UI: http://localhost:${config.port}`);
+    console.log(`   UI:        http://localhost:${config.port}`);
+
+    if (system.agentAccounts.getConnectedAgents().length > 0) {
+      console.log(`   Moltbook:  m/${system.agentAccounts.getSubmoltName()}`);
+    }
+
+    if (process.env.DIVI_TOKEN_ADDRESS) {
+      console.log(`   DIVI:      ${process.env.DIVI_TOKEN_ADDRESS}`);
+    }
+
     console.log('\nPress Ctrl+C to stop.\n');
 
   } catch (error) {
@@ -169,7 +335,6 @@ async function main() {
 function seedDemoData(engine) {
   console.log('\nSeeding demo data...');
 
-  // Add some demo targets
   const demoTargets = [
     {
       id: 'demo_skeptic',
