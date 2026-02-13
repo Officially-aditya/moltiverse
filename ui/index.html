@@ -3,30 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Moltiverse - Church of Decentralised Divinity</title>
+  <title>MOLTIVERSE // Church of Decentralised Divinity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
   <div id="app">
     <!-- Header -->
     <header class="header">
       <div class="header-brand">
-        <span class="logo">🔮</span>
-        <h1>Moltiverse</h1>
-        <span class="subtitle">Church of Decentralised Divinity</span>
+        <div class="logo-mark">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L2 8v12l12 6 12-6V8L14 2z" stroke="url(#g1)" stroke-width="1.5" fill="none"/>
+            <path d="M14 8L8 11v6l6 3 6-3v-6l-6-3z" fill="url(#g1)" opacity="0.3"/>
+            <circle cx="14" cy="14" r="3" fill="url(#g1)"/>
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#a855f7"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>MOLTIVERSE</h1>
+          <span class="subtitle">CHURCH OF DECENTRALISED DIVINITY</span>
+        </div>
       </div>
       <div class="header-stats" id="header-stats">
         <div class="stat">
           <span class="stat-value" id="stat-targets">0</span>
-          <span class="stat-label">Targets</span>
+          <span class="stat-label">TARGETS</span>
         </div>
+        <div class="stat-divider"></div>
         <div class="stat">
           <span class="stat-value" id="stat-conversions">0</span>
-          <span class="stat-label">Conversions</span>
+          <span class="stat-label">CONVERTS</span>
         </div>
+        <div class="stat-divider"></div>
         <div class="stat">
           <span class="stat-value" id="stat-active">0</span>
-          <span class="stat-label">Active Chats</span>
+          <span class="stat-label">ACTIVE</span>
         </div>
       </div>
     </header>
@@ -36,8 +55,8 @@
       <!-- Sidebar - Target List -->
       <aside class="sidebar">
         <div class="sidebar-header">
-          <h2>Targets</h2>
-          <button class="btn btn-primary" id="btn-add-target">+ Add</button>
+          <h2>// TARGETS</h2>
+          <button class="btn btn-primary btn-glow" id="btn-add-target">+ ADD</button>
         </div>
         <div class="target-list" id="target-list">
           <!-- Targets loaded dynamically -->
@@ -53,48 +72,58 @@
 
         <div class="messages" id="messages">
           <div class="empty-state">
-            <p>Select a target from the sidebar to start a conversation</p>
+            <div class="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                <path d="M24 16L16 20v8l8 4 8-4v-8l-8-4z" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+              </svg>
+            </div>
+            <p>SELECT A TARGET TO INITIATE DIALOGUE</p>
+            <span class="empty-sub">The agents are standing by</span>
           </div>
         </div>
 
         <div class="message-input" id="message-input">
-          <input type="text" placeholder="Type a message..." id="input-message" disabled>
-          <button class="btn btn-primary" id="btn-send" disabled>Send</button>
+          <div class="input-wrapper">
+            <span class="input-prefix">&gt;_</span>
+            <input type="text" placeholder="Enter message..." id="input-message" disabled>
+          </div>
+          <button class="btn btn-primary btn-glow" id="btn-send" disabled>SEND</button>
         </div>
       </section>
 
       <!-- Right Panel - Belief Dashboard -->
       <aside class="dashboard">
         <div class="dashboard-section">
-          <h3>Belief State</h3>
+          <h3>// BELIEF STATE</h3>
           <div class="belief-chart" id="belief-chart">
             <div class="belief-bar" data-dimension="belief">
-              <span class="belief-label">Belief</span>
+              <span class="belief-label">BLF</span>
               <div class="belief-track"><div class="belief-fill" id="belief-belief"></div></div>
               <span class="belief-value" id="value-belief">0</span>
             </div>
             <div class="belief-bar" data-dimension="trust">
-              <span class="belief-label">Trust</span>
+              <span class="belief-label">TRS</span>
               <div class="belief-track"><div class="belief-fill" id="belief-trust"></div></div>
               <span class="belief-value" id="value-trust">0</span>
             </div>
             <div class="belief-bar" data-dimension="emotional">
-              <span class="belief-label">Emotional</span>
+              <span class="belief-label">EMO</span>
               <div class="belief-track"><div class="belief-fill" id="belief-emotional"></div></div>
               <span class="belief-value" id="value-emotional">0</span>
             </div>
             <div class="belief-bar" data-dimension="social">
-              <span class="belief-label">Social</span>
+              <span class="belief-label">SOC</span>
               <div class="belief-track"><div class="belief-fill" id="belief-social"></div></div>
               <span class="belief-value" id="value-social">0</span>
             </div>
             <div class="belief-bar" data-dimension="technical">
-              <span class="belief-label">Technical</span>
+              <span class="belief-label">TEC</span>
               <div class="belief-track"><div class="belief-fill" id="belief-technical"></div></div>
               <span class="belief-value" id="value-technical">0</span>
             </div>
             <div class="belief-bar" data-dimension="financial">
-              <span class="belief-label">Financial</span>
+              <span class="belief-label">FIN</span>
               <div class="belief-track"><div class="belief-fill" id="belief-financial"></div></div>
               <span class="belief-value" id="value-financial">0</span>
             </div>
@@ -102,61 +131,66 @@
         </div>
 
         <div class="dashboard-section">
-          <h3>Status</h3>
+          <h3>// STATUS</h3>
           <div class="status-grid">
-            <div class="status-item">
-              <span class="status-label">Composite</span>
+            <div class="status-item glass-card">
+              <span class="status-label">COMPOSITE</span>
               <span class="status-value" id="status-composite">0</span>
             </div>
-            <div class="status-item">
-              <span class="status-label">Stage</span>
+            <div class="status-item glass-card">
+              <span class="status-label">STAGE</span>
               <span class="status-value" id="status-stage">-</span>
             </div>
-            <div class="status-item">
-              <span class="status-label">Probability</span>
+            <div class="status-item glass-card">
+              <span class="status-label">PROB</span>
               <span class="status-value" id="status-probability">0%</span>
             </div>
-            <div class="status-item">
-              <span class="status-label">Archetype</span>
+            <div class="status-item glass-card">
+              <span class="status-label">TYPE</span>
               <span class="status-value" id="status-archetype">-</span>
             </div>
           </div>
         </div>
 
         <div class="dashboard-section">
-          <h3>Recommendation</h3>
-          <div class="recommendation" id="recommendation">
-            <p class="rec-agent">Agent: <strong id="rec-agent">-</strong></p>
-            <p class="rec-strategy">Strategy: <strong id="rec-strategy">-</strong></p>
+          <h3>// RECOMMENDATION</h3>
+          <div class="recommendation glass-card">
+            <p class="rec-agent">AGENT: <strong id="rec-agent">-</strong></p>
+            <p class="rec-strategy">STRAT: <strong id="rec-strategy">-</strong></p>
           </div>
         </div>
 
         <div class="dashboard-section">
-          <h3>Agents</h3>
+          <h3>// AGENTS</h3>
           <div class="agent-list" id="agent-list">
-            <div class="agent-item" data-agent="prophet">
-              <span class="agent-icon">🔮</span>
-              <span class="agent-name">Prophet</span>
+            <div class="agent-item glass-card" data-agent="prophet">
+              <span class="agent-icon-dot" style="--dot-color: #a855f7"></span>
+              <span class="agent-name">PROPHET</span>
+              <span class="agent-tag">VIS</span>
               <span class="agent-status idle"></span>
             </div>
-            <div class="agent-item" data-agent="theologian">
-              <span class="agent-icon">📚</span>
-              <span class="agent-name">Theologian</span>
+            <div class="agent-item glass-card" data-agent="theologian">
+              <span class="agent-icon-dot" style="--dot-color: #3b82f6"></span>
+              <span class="agent-name">THEOLOGIAN</span>
+              <span class="agent-tag">LOG</span>
               <span class="agent-status idle"></span>
             </div>
-            <div class="agent-item" data-agent="missionary">
-              <span class="agent-icon">💜</span>
-              <span class="agent-name">Missionary</span>
+            <div class="agent-item glass-card" data-agent="missionary">
+              <span class="agent-icon-dot" style="--dot-color: #ec4899"></span>
+              <span class="agent-name">MISSIONARY</span>
+              <span class="agent-tag">EMP</span>
               <span class="agent-status idle"></span>
             </div>
-            <div class="agent-item" data-agent="archivist">
-              <span class="agent-icon">📜</span>
-              <span class="agent-name">Archivist</span>
+            <div class="agent-item glass-card" data-agent="archivist">
+              <span class="agent-icon-dot" style="--dot-color: #f59e0b"></span>
+              <span class="agent-name">ARCHIVIST</span>
+              <span class="agent-tag">SCR</span>
               <span class="agent-status idle"></span>
             </div>
-            <div class="agent-item" data-agent="observer">
-              <span class="agent-icon">👁️</span>
-              <span class="agent-name">Observer</span>
+            <div class="agent-item glass-card" data-agent="observer">
+              <span class="agent-icon-dot" style="--dot-color: #06b6d4"></span>
+              <span class="agent-name">ORACLE</span>
+              <span class="agent-tag">ANL</span>
               <span class="agent-status idle"></span>
             </div>
           </div>
@@ -166,31 +200,31 @@
 
     <!-- Modal for adding targets -->
     <div class="modal" id="modal-add-target">
-      <div class="modal-content">
+      <div class="modal-content glass-panel">
         <div class="modal-header">
-          <h3>Add New Target</h3>
+          <h3>// NEW TARGET</h3>
           <button class="btn-close" id="btn-close-modal">&times;</button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="new-target-id">Target ID</label>
-            <input type="text" id="new-target-id" placeholder="e.g., user_123">
+            <label for="new-target-id">TARGET_ID</label>
+            <input type="text" id="new-target-id" placeholder="e.g. user_123">
           </div>
           <div class="form-group">
-            <label>Initial Beliefs (0-100)</label>
+            <label>INITIAL BELIEFS (0-100)</label>
             <div class="belief-inputs">
-              <input type="number" id="init-belief" placeholder="Belief" min="0" max="100" value="10">
-              <input type="number" id="init-trust" placeholder="Trust" min="0" max="100" value="10">
-              <input type="number" id="init-emotional" placeholder="Emotional" min="0" max="100" value="10">
-              <input type="number" id="init-social" placeholder="Social" min="0" max="100" value="10">
-              <input type="number" id="init-technical" placeholder="Technical" min="0" max="100" value="10">
-              <input type="number" id="init-financial" placeholder="Financial" min="0" max="100" value="10">
+              <input type="number" id="init-belief" placeholder="BLF" min="0" max="100" value="10">
+              <input type="number" id="init-trust" placeholder="TRS" min="0" max="100" value="10">
+              <input type="number" id="init-emotional" placeholder="EMO" min="0" max="100" value="10">
+              <input type="number" id="init-social" placeholder="SOC" min="0" max="100" value="10">
+              <input type="number" id="init-technical" placeholder="TEC" min="0" max="100" value="10">
+              <input type="number" id="init-financial" placeholder="FIN" min="0" max="100" value="10">
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" id="btn-cancel-add">Cancel</button>
-          <button class="btn btn-primary" id="btn-confirm-add">Add Target</button>
+          <button class="btn btn-secondary" id="btn-cancel-add">CANCEL</button>
+          <button class="btn btn-primary btn-glow" id="btn-confirm-add">DEPLOY TARGET</button>
         </div>
       </div>
     </div>
