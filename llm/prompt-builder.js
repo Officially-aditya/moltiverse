@@ -272,7 +272,7 @@ Address this concern in your response.
     }
 
     // Add the current message
-    prompt += `--- CURRENT MESSAGE ---\n[USER]: ${userMessage}\n\nRespond as ${AGENT_PROMPTS[this.agentId]?.name || 'the agent'}:`;
+    prompt += `--- CURRENT MESSAGE ---\n[USER]: ${userMessage}\n\nRespond in character. Do NOT include your name, headers, markdown formatting, asterisks, or roleplay actions like *nodding*. Just reply naturally as plain text in a conversational tone. Keep it concise (2-4 sentences).`;
 
     return prompt;
   }

@@ -320,6 +320,8 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  overflow: hidden;
+  min-height: 0;
 }
 
 .conversation-header {

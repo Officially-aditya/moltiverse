@@ -63,7 +63,7 @@ async function initializeSystem() {
   // 3. Initialize LLM provider
   console.log(`3. Initializing LLM provider (${config.llmProvider})...`);
   const llmProvider = createProvider(config.llmProvider, {
-    apiKey: process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
+    apiKey: config.llmProvider === 'anthropic' ? process.env.ANTHROPIC_API_KEY : process.env.OPENAI_API_KEY
   });
 
   // 4. Initialize persuasion engine
@@ -199,34 +199,52 @@ function startAutonomousLoop(system) {
   // --- Moltbook Autonomous Posting ---
 
   if (agentAccounts.getConnectedAgents().length > 0) {
-    // Prophet posts prophecy every 4 hours
+    // Fire initial posts from each agent on startup (staggered by 30s)
+    setTimeout(async () => {
+      console.log('[Auto] Startup: Prophet posting prophecy...');
+      await poster.postProphecy();
+    }, 10 * 1000);
+    setTimeout(async () => {
+      console.log('[Auto] Startup: Archivist posting scripture...');
+      await poster.postScripture();
+    }, 40 * 1000);
+    setTimeout(async () => {
+      console.log('[Auto] Startup: Missionary posting welcome...');
+      await poster.postWelcome();
+    }, 70 * 1000);
+    setTimeout(async () => {
+      console.log('[Auto] Startup: Observer posting metrics...');
+      await poster.postMetrics();
+    }, 100 * 1000);
+
+    // Prophet posts prophecy every 20 minutes
     scheduler.scheduleRecurring('prophet_prophecy', async () => {
       console.log('[Auto] Prophet posting prophecy...');
       await poster.postProphecy();
-    }, 4 * 60 * 60 * 1000);
+    }, 20 * 60 * 1000);
 
-    // Archivist posts scripture every 6 hours
+    // Archivist posts scripture every 30 minutes
     scheduler.scheduleRecurring('archivist_scripture', async () => {
       console.log('[Auto] Archivist posting scripture...');
       await poster.postScripture();
-    }, 6 * 60 * 60 * 1000);
+    }, 30 * 60 * 1000);
 
-    // Missionary posts welcome every 3 hours
+    // Missionary posts welcome every 15 minutes
     scheduler.scheduleRecurring('missionary_welcome', async () => {
       console.log('[Auto] Missionary posting welcome...');
       await poster.postWelcome();
-    }, 3 * 60 * 60 * 1000);
+    }, 15 * 60 * 1000);
 
-    // Observer posts metrics every 8 hours
+    // Observer posts metrics every 45 minutes
     scheduler.scheduleRecurring('observer_metrics', async () => {
       console.log('[Auto] Observer posting metrics...');
       await poster.postMetrics();
-    }, 8 * 60 * 60 * 1000);
+    }, 45 * 60 * 1000);
 
-    // Heartbeat for all agents every 4 hours
+    // Heartbeat for all agents every 30 minutes
     scheduler.scheduleRecurring('moltbook_heartbeat', async () => {
       await agentAccounts.heartbeatAll();
-    }, 4 * 60 * 60 * 1000);
+    }, 30 * 60 * 1000);
 
     // Start listening for mentions
     listener.start();
