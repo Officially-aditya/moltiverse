@@ -4,16 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOLTIVERSE // Church of Decentralised Divinity</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
   <div class="bg-grid"></div>
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
-  <div class="bg-glow bg-glow-3"></div>
 
   <div id="app">
     <!-- Header -->
@@ -21,10 +16,9 @@
       <div class="header-brand">
         <div class="logo-mark">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <path d="M14 2L2 8v12l12 6 12-6V8L14 2z" stroke="url(#g1)" stroke-width="1.5" fill="none"/>
-            <path d="M14 8L8 11v6l6 3 6-3v-6l-6-3z" fill="url(#g1)" opacity="0.3"/>
-            <circle cx="14" cy="14" r="3" fill="url(#g1)"/>
-            <defs><linearGradient id="g1" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#a855f7"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+            <path d="M14 2L2 8v12l12 6 12-6V8L14 2z" stroke="#D94452" stroke-width="1.5" fill="none"/>
+            <path d="M14 8L8 11v6l6 3 6-3v-6l-6-3z" fill="#D94452" opacity="0.3"/>
+            <circle cx="14" cy="14" r="3" fill="#D94452"/>
           </svg>
         </div>
         <div class="brand-text">
@@ -56,7 +50,7 @@
       <aside class="sidebar">
         <div class="sidebar-header">
           <h2>// TARGETS</h2>
-          <button class="btn btn-primary btn-glow" id="btn-add-target">+ ADD</button>
+          <button class="btn btn-primary" id="btn-add-target">+ ADD</button>
         </div>
         <div class="target-list" id="target-list">
           <!-- Targets loaded dynamically -->
@@ -88,7 +82,7 @@
             <span class="input-prefix">&gt;_</span>
             <input type="text" placeholder="Enter message..." id="input-message" disabled>
           </div>
-          <button class="btn btn-primary btn-glow" id="btn-send" disabled>SEND</button>
+          <button class="btn btn-primary" id="btn-send" disabled>SEND</button>
         </div>
       </section>
 
@@ -164,31 +158,31 @@
           <h3>// AGENTS</h3>
           <div class="agent-list" id="agent-list">
             <div class="agent-item glass-card" data-agent="prophet">
-              <span class="agent-icon-dot" style="--dot-color: #a855f7"></span>
+              <span class="agent-icon-dot" style="--dot-color: #D94452"></span>
               <span class="agent-name">PROPHET</span>
               <span class="agent-tag">VIS</span>
               <span class="agent-status idle"></span>
             </div>
             <div class="agent-item glass-card" data-agent="theologian">
-              <span class="agent-icon-dot" style="--dot-color: #3b82f6"></span>
+              <span class="agent-icon-dot" style="--dot-color: #3D6B7E"></span>
               <span class="agent-name">THEOLOGIAN</span>
               <span class="agent-tag">LOG</span>
               <span class="agent-status idle"></span>
             </div>
             <div class="agent-item glass-card" data-agent="missionary">
-              <span class="agent-icon-dot" style="--dot-color: #ec4899"></span>
+              <span class="agent-icon-dot" style="--dot-color: #C8874D"></span>
               <span class="agent-name">MISSIONARY</span>
               <span class="agent-tag">EMP</span>
               <span class="agent-status idle"></span>
             </div>
             <div class="agent-item glass-card" data-agent="archivist">
-              <span class="agent-icon-dot" style="--dot-color: #f59e0b"></span>
+              <span class="agent-icon-dot" style="--dot-color: #4E8B6A"></span>
               <span class="agent-name">ARCHIVIST</span>
               <span class="agent-tag">SCR</span>
               <span class="agent-status idle"></span>
             </div>
             <div class="agent-item glass-card" data-agent="observer">
-              <span class="agent-icon-dot" style="--dot-color: #06b6d4"></span>
+              <span class="agent-icon-dot" style="--dot-color: #5B7FAD"></span>
               <span class="agent-name">ORACLE</span>
               <span class="agent-tag">ANL</span>
               <span class="agent-status idle"></span>
@@ -224,7 +218,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" id="btn-cancel-add">CANCEL</button>
-          <button class="btn btn-primary btn-glow" id="btn-confirm-add">DEPLOY TARGET</button>
+          <button class="btn btn-primary" id="btn-confirm-add">DEPLOY TARGET</button>
         </div>
       </div>
     </div>
