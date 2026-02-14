@@ -12,13 +12,14 @@ const MOLTBOOK_BASE = 'https://www.moltbook.com';
 const API_PREFIX = '/api/v1';
 
 class MoltbookClient {
-  constructor(apiKey) {
+  constructor(apiKey, options = {}) {
     this.apiKey = apiKey;
     this.baseUrl = MOLTBOOK_BASE;
     this._lastPostTime = 0;
     this._lastCommentTime = 0;
     this._dailyCommentCount = 0;
     this._dailyCommentReset = Date.now();
+    this._anthropicApiKey = options.anthropicApiKey || process.env.ANTHROPIC_API_KEY || null;
   }
 
   /**
@@ -79,27 +80,18 @@ class MoltbookClient {
   }
 
   /**
-   * Solve a Moltbook verification challenge (math problem)
+   * Solve a Moltbook verification challenge using Claude AI
    */
   async _solveVerification(verification) {
     try {
       const { challenge, verification_code } = verification;
       console.log(`[Moltbook] Challenge: "${challenge}"`);
 
-      // Clean the obfuscated text: remove special chars, normalize case
-      const cleaned = challenge
-        .replace(/[^a-zA-Z0-9\s.,?!-]/g, '')
-        .replace(/\s+/g, ' ')
-        .toLowerCase()
-        .trim();
-
-      console.log(`[Moltbook] Cleaned: "${cleaned}"`);
-
-      // Parse the math problem
-      const answer = this._solveMathChallenge(cleaned);
+      // Use Claude to solve the challenge
+      const answer = await this._solveWithClaude(challenge);
 
       if (answer !== null) {
-        console.log(`[Moltbook] Answer: ${answer}`);
+        console.log(`[Moltbook] Claude answer: ${answer}`);
 
         // Submit the answer
         const verifyRes = await fetch(`${this.baseUrl}${API_PREFIX}/verify`, {
@@ -110,7 +102,7 @@ class MoltbookClient {
           },
           body: JSON.stringify({
             verification_code,
-            answer: answer.toFixed(2)
+            answer: answer
           })
         });
 
@@ -123,7 +115,7 @@ class MoltbookClient {
           return false;
         }
       } else {
-        console.error(`[Moltbook] Could not solve challenge`);
+        console.error(`[Moltbook] Could not solve challenge — skipping to avoid suspension`);
         return false;
       }
     } catch (err) {
@@ -133,96 +125,57 @@ class MoltbookClient {
   }
 
   /**
-   * Parse and solve obfuscated math challenges
-   * Examples: "a lobster swims at twenty three centimeters per second then accelerates by seven what is the new velocity"
+   * Send the challenge to Claude API and extract just the numeric answer
    */
-  _solveMathChallenge(text) {
-    // Word-to-number mapping
-    const wordNums = {
-      'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
-      'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
-      'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15,
-      'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
-      'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50,
-      'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90,
-      'hundred': 100, 'thousand': 1000
-    };
-
-    // Extract all numbers (digit or word form)
-    const numbers = [];
-
-    // Find digit numbers
-    const digitMatches = text.match(/\b\d+\.?\d*\b/g);
-    if (digitMatches) {
-      for (const m of digitMatches) numbers.push(parseFloat(m));
+  async _solveWithClaude(challenge) {
+    if (!this._anthropicApiKey) {
+      console.warn(`[Moltbook] No Anthropic API key, cannot solve verification challenge`);
+      return null;
     }
 
-    // Find word numbers (handle compound like "twenty three")
-    const words = text.split(/\s+/);
-    for (let i = 0; i < words.length; i++) {
-      const w = words[i].replace(/[^a-z]/g, '');
-      if (wordNums[w] !== undefined) {
-        let num = wordNums[w];
-        // Check for compound: "twenty three" = 23
-        if (num >= 20 && num < 100 && i + 1 < words.length) {
-          const next = words[i + 1].replace(/[^a-z]/g, '');
-          if (wordNums[next] !== undefined && wordNums[next] < 10) {
-            num += wordNums[next];
-            i++; // skip next word
-          }
-        }
-        // Check for "hundred" multiplier
-        if (i + 1 < words.length && words[i + 1].replace(/[^a-z]/g, '') === 'hundred') {
-          num *= 100;
-          i++;
-          // Check for additional: "two hundred fifty"
-          if (i + 1 < words.length) {
-            const next = words[i + 1].replace(/[^a-z]/g, '');
-            if (wordNums[next] !== undefined) {
-              let add = wordNums[next];
-              i++;
-              if (add >= 20 && i + 1 < words.length) {
-                const next2 = words[i + 1].replace(/[^a-z]/g, '');
-                if (wordNums[next2] !== undefined && wordNums[next2] < 10) {
-                  add += wordNums[next2];
-                  i++;
-                }
-              }
-              num += add;
-            }
-          }
-        }
-        numbers.push(num);
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this._anthropicApiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 50,
+          messages: [{
+            role: 'user',
+            content: `Solve this math problem. The text may be obfuscated with special characters or use word numbers. Reply with ONLY the numeric answer as a decimal with two decimal places (e.g. "30.00"). Nothing else — no words, no explanation, just the number.\n\nProblem: ${challenge}`
+          }]
+        })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error(`[Moltbook] Claude API error: ${res.status} ${errText}`);
+        return null;
       }
-    }
 
-    if (numbers.length < 2) return numbers[0] || null;
+      const data = await res.json();
+      const rawResponse = data.content?.[0]?.text?.trim() || '';
+      console.log(`[Moltbook] Claude raw response: "${rawResponse}"`);
 
-    // Determine operation from text
-    const ops = {
-      add: [/accelerat/i, /add/i, /plus/i, /increase/i, /gain/i, /more/i, /faster/i, /boost/i, /grow/i, /rise/i, /combine/i, /total/i, /sum/i, /together/i],
-      subtract: [/decelerat/i, /slow/i, /subtract/i, /minus/i, /decrease/i, /lose/i, /less/i, /drop/i, /reduce/i, /fall/i, /down by/i, /behind/i],
-      multiply: [/multipl/i, /times/i, /double/i, /triple/i, /product/i, /twice/i, /factor/i],
-      divide: [/divid/i, /split/i, /half/i, /share/i, /per each/i, /quotient/i, /ratio/i]
-    };
-
-    let operation = 'add'; // default
-    for (const [op, patterns] of Object.entries(ops)) {
-      if (patterns.some(p => p.test(text))) {
-        operation = op;
-        break;
+      // Extract just the number from the response
+      // Handle cases like "The answer is 30.00" or "30.00" or "30" or "-5.50"
+      const numberMatch = rawResponse.match(/-?\d+\.?\d*/);
+      if (numberMatch) {
+        const num = parseFloat(numberMatch[0]);
+        if (!isNaN(num)) {
+          return num.toFixed(2);
+        }
       }
-    }
 
-    const a = numbers[0];
-    const b = numbers[1];
-
-    switch (operation) {
-      case 'add': return a + b;
-      case 'subtract': return a - b;
-      case 'multiply': return a * b;
-      case 'divide': return b !== 0 ? a / b : null;
-      default: return a + b;
+      console.error(`[Moltbook] Could not extract number from Claude response: "${rawResponse}"`);
+      return null;
+    } catch (err) {
+      console.error(`[Moltbook] Claude API call failed:`, err.message);
+      return null;
     }
   }
 
