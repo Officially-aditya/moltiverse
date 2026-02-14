@@ -19,7 +19,7 @@ const { Database, TargetStore, EventLog } = require('./state');
 const APIServer = require('./api');
 
 // New modules
-const { AgentAccounts, MoltbookPoster, MoltbookListener } = require('./moltbook');
+const { AgentAccounts, MoltbookPoster, MoltbookListener, MoltbookOutreach } = require('./moltbook');
 const { TokenMonitor, TokenBeliefBridge } = require('./token');
 
 // =============================================================================
@@ -127,6 +127,20 @@ async function initializeSystem() {
     eventHandler
   });
 
+  // 9b. Initialize Moltbook Outreach Engine
+  console.log('9b. Initializing outreach engine...');
+  // Claimed agents = those verified via Moltbook claim flow
+  const claimedAgents = (process.env.CLAIMED_AGENTS || 'prophet,missionary').split(',').map(s => s.trim());
+
+  const outreach = new MoltbookOutreach({
+    agentAccounts,
+    poster,
+    agentManager,
+    engine,
+    scheduler: new Scheduler({ eventHandler, conversionTracker: engine.tracker }),
+    claimedAgents
+  });
+
   // 10. Initialize Token Monitor
   console.log('10. Initializing token monitor...');
   const tokenMonitor = new TokenMonitor({
@@ -176,6 +190,7 @@ async function initializeSystem() {
     agentAccounts,
     poster,
     listener,
+    outreach,
     tokenMonitor,
     bridge
   };
@@ -191,7 +206,7 @@ async function initializeSystem() {
 // =============================================================================
 
 function startAutonomousLoop(system) {
-  const { orchestrator, poster, listener, tokenMonitor, bridge, agentAccounts } = system;
+  const { orchestrator, poster, listener, outreach, tokenMonitor, bridge, agentAccounts } = system;
   const scheduler = orchestrator.scheduler;
 
   console.log('\nStarting autonomous agent loop...');
@@ -249,8 +264,15 @@ function startAutonomousLoop(system) {
     // Start listening for mentions
     listener.start();
 
+    // Start outreach engine with 2-min warmup delay
+    setTimeout(() => {
+      console.log('[Auto] Starting outreach engine (warmup complete)...');
+      outreach.start();
+    }, 2 * 60 * 1000);
+
     console.log('   - Moltbook autonomous posting: ACTIVE');
     console.log('   - Moltbook listener: ACTIVE');
+    console.log('   - Moltbook outreach: ACTIVE (starts after 2m warmup)');
   } else {
     console.log('   - Moltbook: INACTIVE (no API keys configured)');
   }
@@ -314,6 +336,7 @@ async function main() {
 
       // Stop autonomous components
       system.listener.stop();
+      system.outreach.stop();
       system.tokenMonitor.stop();
       system.orchestrator.scheduler.cancelAll();
 
