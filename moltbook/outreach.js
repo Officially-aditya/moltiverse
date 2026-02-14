@@ -166,14 +166,14 @@ class MoltbookOutreach {
       }
     }, 5 * 60 * 1000);
 
-    // Schedule engagement every 4 minutes (aggressive — comment on 5 targets per cycle)
+    // Schedule engagement every 5 minutes
     this.scheduler.scheduleRecurring('outreach_engage', async () => {
       try {
         await this.executeOutreach();
       } catch (err) {
         console.error('[Outreach] Engagement error:', err.message);
       }
-    }, 4 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
     // Schedule response checking every 2 minutes
     this.scheduler.scheduleRecurring('outreach_responses', async () => {
