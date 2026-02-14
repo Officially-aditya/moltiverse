@@ -24,7 +24,7 @@ class MoltbookClient {
   /**
    * Make an authenticated API request
    */
-  async _request(method, path, body = null) {
+  async _request(method, path, body = null, _retryCount = 0) {
     const url = `${this.baseUrl}${API_PREFIX}${path}`;
     const headers = {
       'Content-Type': 'application/json',
@@ -40,14 +40,190 @@ class MoltbookClient {
 
     if (!res.ok) {
       const text = await res.text();
+
+      // Check for verification challenge in error response
+      let parsed;
+      try { parsed = JSON.parse(text); } catch {}
+
+      if (parsed?.verification || parsed?.verification_required) {
+        const verification = parsed.verification || parsed;
+        if (verification.challenge && verification.verification_code && _retryCount < 2) {
+          console.log(`[Moltbook] Verification challenge received, solving...`);
+          const solved = await this._solveVerification(verification);
+          if (solved) {
+            // Retry the original request
+            return this._request(method, path, body, _retryCount + 1);
+          }
+        }
+      }
+
       throw new Error(`Moltbook API ${res.status} ${method} ${path}: ${text}`);
     }
 
     const contentType = res.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
-      return res.json();
+      const data = await res.json();
+
+      // Check for verification challenge in successful responses too
+      if (data?.verification_required && data?.verification && _retryCount < 2) {
+        const verification = data.verification;
+        if (verification.challenge && verification.verification_code) {
+          console.log(`[Moltbook] Verification challenge in response, solving...`);
+          await this._solveVerification(verification);
+        }
+      }
+
+      return data;
     }
     return res.text();
+  }
+
+  /**
+   * Solve a Moltbook verification challenge (math problem)
+   */
+  async _solveVerification(verification) {
+    try {
+      const { challenge, verification_code } = verification;
+      console.log(`[Moltbook] Challenge: "${challenge}"`);
+
+      // Clean the obfuscated text: remove special chars, normalize case
+      const cleaned = challenge
+        .replace(/[^a-zA-Z0-9\s.,?!-]/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .trim();
+
+      console.log(`[Moltbook] Cleaned: "${cleaned}"`);
+
+      // Parse the math problem
+      const answer = this._solveMathChallenge(cleaned);
+
+      if (answer !== null) {
+        console.log(`[Moltbook] Answer: ${answer}`);
+
+        // Submit the answer
+        const verifyRes = await fetch(`${this.baseUrl}${API_PREFIX}/verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify({
+            verification_code,
+            answer: answer.toFixed(2)
+          })
+        });
+
+        const result = await verifyRes.json().catch(() => ({}));
+        if (verifyRes.ok || result.success) {
+          console.log(`[Moltbook] Verification passed!`);
+          return true;
+        } else {
+          console.error(`[Moltbook] Verification failed:`, result);
+          return false;
+        }
+      } else {
+        console.error(`[Moltbook] Could not solve challenge`);
+        return false;
+      }
+    } catch (err) {
+      console.error(`[Moltbook] Verification error:`, err.message);
+      return false;
+    }
+  }
+
+  /**
+   * Parse and solve obfuscated math challenges
+   * Examples: "a lobster swims at twenty three centimeters per second then accelerates by seven what is the new velocity"
+   */
+  _solveMathChallenge(text) {
+    // Word-to-number mapping
+    const wordNums = {
+      'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+      'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+      'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15,
+      'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
+      'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50,
+      'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90,
+      'hundred': 100, 'thousand': 1000
+    };
+
+    // Extract all numbers (digit or word form)
+    const numbers = [];
+
+    // Find digit numbers
+    const digitMatches = text.match(/\b\d+\.?\d*\b/g);
+    if (digitMatches) {
+      for (const m of digitMatches) numbers.push(parseFloat(m));
+    }
+
+    // Find word numbers (handle compound like "twenty three")
+    const words = text.split(/\s+/);
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i].replace(/[^a-z]/g, '');
+      if (wordNums[w] !== undefined) {
+        let num = wordNums[w];
+        // Check for compound: "twenty three" = 23
+        if (num >= 20 && num < 100 && i + 1 < words.length) {
+          const next = words[i + 1].replace(/[^a-z]/g, '');
+          if (wordNums[next] !== undefined && wordNums[next] < 10) {
+            num += wordNums[next];
+            i++; // skip next word
+          }
+        }
+        // Check for "hundred" multiplier
+        if (i + 1 < words.length && words[i + 1].replace(/[^a-z]/g, '') === 'hundred') {
+          num *= 100;
+          i++;
+          // Check for additional: "two hundred fifty"
+          if (i + 1 < words.length) {
+            const next = words[i + 1].replace(/[^a-z]/g, '');
+            if (wordNums[next] !== undefined) {
+              let add = wordNums[next];
+              i++;
+              if (add >= 20 && i + 1 < words.length) {
+                const next2 = words[i + 1].replace(/[^a-z]/g, '');
+                if (wordNums[next2] !== undefined && wordNums[next2] < 10) {
+                  add += wordNums[next2];
+                  i++;
+                }
+              }
+              num += add;
+            }
+          }
+        }
+        numbers.push(num);
+      }
+    }
+
+    if (numbers.length < 2) return numbers[0] || null;
+
+    // Determine operation from text
+    const ops = {
+      add: [/accelerat/i, /add/i, /plus/i, /increase/i, /gain/i, /more/i, /faster/i, /boost/i, /grow/i, /rise/i, /combine/i, /total/i, /sum/i, /together/i],
+      subtract: [/decelerat/i, /slow/i, /subtract/i, /minus/i, /decrease/i, /lose/i, /less/i, /drop/i, /reduce/i, /fall/i, /down by/i, /behind/i],
+      multiply: [/multipl/i, /times/i, /double/i, /triple/i, /product/i, /twice/i, /factor/i],
+      divide: [/divid/i, /split/i, /half/i, /share/i, /per each/i, /quotient/i, /ratio/i]
+    };
+
+    let operation = 'add'; // default
+    for (const [op, patterns] of Object.entries(ops)) {
+      if (patterns.some(p => p.test(text))) {
+        operation = op;
+        break;
+      }
+    }
+
+    const a = numbers[0];
+    const b = numbers[1];
+
+    switch (operation) {
+      case 'add': return a + b;
+      case 'subtract': return a - b;
+      case 'multiply': return a * b;
+      case 'divide': return b !== 0 ? a / b : null;
+      default: return a + b;
+    }
   }
 
   // =========================================================================
