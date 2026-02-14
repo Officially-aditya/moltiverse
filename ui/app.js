@@ -96,8 +96,8 @@ function handleWebSocketMessage(data) {
       break;
 
     case 'agent_message':
+      // Only update agent status indicator — message is already added by sendMessage()
       if (data.targetId === state.selectedTarget?.id) {
-        addMessage('agent', data.content, data.agentName);
         updateAgentStatus(data.agentId, true);
         setTimeout(() => updateAgentStatus(data.agentId, false), 2000);
       }

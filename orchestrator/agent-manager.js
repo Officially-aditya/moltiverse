@@ -124,7 +124,7 @@ class AgentManager {
       return {
         agentId,
         agentName: agent.name,
-        content: response,
+        content: this._cleanResponse(response, agent.name),
         timestamp: Date.now(),
         responseTime
       };
@@ -202,6 +202,27 @@ class AgentManager {
     agent.activeConversations.add(targetId);
 
     return response;
+  }
+
+  /**
+   * Clean LLM response of markdown, agent names, and roleplay actions
+   */
+  _cleanResponse(text, agentName) {
+    let cleaned = text;
+    // Remove agent name if it appears at the start
+    if (agentName) {
+      const namePattern = new RegExp(`^\\s*#*\\s*${agentName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[:.]?\\s*`, 'i');
+      cleaned = cleaned.replace(namePattern, '');
+    }
+    // Remove markdown headers
+    cleaned = cleaned.replace(/^#+\s+/gm, '');
+    // Remove asterisk roleplay actions like *nodding*, *smiles*
+    cleaned = cleaned.replace(/\*[^*]+\*\s*/g, '');
+    // Remove bold/italic markdown
+    cleaned = cleaned.replace(/\*\*/g, '').replace(/(?<!\w)\*(?!\*)/g, '');
+    // Remove leading/trailing whitespace and newlines
+    cleaned = cleaned.replace(/^\s+/, '').replace(/\s+$/, '');
+    return cleaned;
   }
 
   /**

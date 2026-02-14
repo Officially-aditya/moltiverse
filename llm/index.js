@@ -141,7 +141,7 @@ class AnthropicProvider extends LLMProvider {
   constructor(config = {}) {
     super(config);
     this.apiKey = config.apiKey || process.env.ANTHROPIC_API_KEY;
-    this.model = config.model || 'claude-3-sonnet-20240229';
+    this.model = config.model || 'claude-sonnet-4-5-20250929';
     this.baseUrl = config.baseUrl || 'https://api.anthropic.com/v1';
   }
 
@@ -163,6 +163,12 @@ class AnthropicProvider extends LLMProvider {
     });
 
     const data = await response.json();
+
+    if (!response.ok || !data.content) {
+      console.error('[Anthropic] API error:', JSON.stringify(data));
+      throw new Error(`Anthropic API error: ${data.error?.message || JSON.stringify(data)}`);
+    }
+
     return data.content[0].text;
   }
 }
