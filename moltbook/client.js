@@ -337,10 +337,10 @@ class MoltbookClient {
       return null;
     }
 
-    // 35s rate limit (new accounts need 30s+, mature accounts need 20s)
+    // 60s rate limit (safe margin for new accounts)
     const timeSinceLastComment = now - this._lastCommentTime;
-    if (timeSinceLastComment < 35000) {
-      await new Promise(r => setTimeout(r, 35000 - timeSinceLastComment));
+    if (timeSinceLastComment < 60000) {
+      await new Promise(r => setTimeout(r, 60000 - timeSinceLastComment));
     }
 
     const body = { content };

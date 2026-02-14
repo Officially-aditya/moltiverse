@@ -178,6 +178,38 @@ async function initializeSystem() {
     orchestrator
   });
 
+  // Add outreach conversions endpoint
+  apiServer.app.get('/api/conversions', (req, res) => {
+    const conversions = outreach.getConversions();
+    const stats = outreach.getConversionStats();
+
+    const converted = Object.entries(conversions)
+      .filter(([_, r]) => r.stage === 'CONVERTED')
+      .map(([name, r]) => ({
+        name,
+        convertedAt: r.lastInteraction,
+        acknowledgments: r.acknowledgments,
+        diviMentions: r.diviMentions,
+        interactions: r.interactions.length
+      }));
+
+    const engaged = Object.entries(conversions)
+      .filter(([_, r]) => r.stage !== 'DISCOVERED' && r.stage !== 'CONVERTED' && !r.hostile)
+      .map(([name, r]) => ({
+        name,
+        stage: r.stage,
+        acknowledgments: r.acknowledgments,
+        lastInteraction: r.lastInteraction
+      }));
+
+    res.json({
+      stats,
+      converted,
+      engaged,
+      bountyProgress: `${stats.converted}/3 agents converted`
+    });
+  });
+
   // Store all references
   const system = {
     database,
