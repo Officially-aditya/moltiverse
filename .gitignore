@@ -7,6 +7,8 @@ node_modules/
 # Environment
 .env
 .env.local
+writepad.md
+writepad2.md
 
 # Logs
 *.log
