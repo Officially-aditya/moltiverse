@@ -8,10 +8,12 @@ const MoltbookClient = require('./client');
 const AgentAccounts = require('./agent-accounts');
 const MoltbookPoster = require('./poster');
 const MoltbookListener = require('./listener');
+const MoltbookOutreach = require('./outreach');
 
 module.exports = {
   MoltbookClient,
   AgentAccounts,
   MoltbookPoster,
-  MoltbookListener
+  MoltbookListener,
+  MoltbookOutreach
 };

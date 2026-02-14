@@ -53,7 +53,7 @@ const AGENT_CONFIGS = {
   }
 };
 
-const SUBMOLT_NAME = 'ChurchOfDecentralisedDivinity';
+const SUBMOLT_NAME = 'church-of-divi';
 
 class AgentAccounts {
   constructor() {

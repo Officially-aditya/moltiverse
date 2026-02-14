@@ -21,7 +21,7 @@ class MoltbookListener {
     this._pollTimer = null;
     this._lastCheckTime = Date.now();
     this._processedIds = new Set();
-    this._submoltName = config.submoltName || 'ChurchOfDecentralisedDivinity';
+    this._submoltName = config.submoltName || 'church-of-divi';
   }
 
   /**
