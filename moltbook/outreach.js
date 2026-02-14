@@ -81,6 +81,7 @@ class MoltbookOutreach {
     this._dailyBudgets = {};
     this._engagedPosts = new Map(); // postId -> { agentId, targetName, timestamp }
     this._discoveredAgents = new Map(); // agentName -> { submolt, lastSeen, postIds }
+    this._suspendedAgents = new Set(); // agents that got 401/suspended
     this._running = false;
 
     // Load persisted state
@@ -373,6 +374,7 @@ class MoltbookOutreach {
   _isAgentUsable(agentId) {
     return this.claimedAgents.includes(agentId) &&
            this.agentAccounts?.isConnected(agentId) &&
+           !this._suspendedAgents.has(agentId) &&
            this._canComment(agentId);
   }
 
@@ -481,7 +483,13 @@ class MoltbookOutreach {
           await new Promise(r => setTimeout(r, 40000));
         }
       } catch (err) {
-        console.error(`[Outreach] Failed to engage ${agentName}:`, err.message);
+        // Detect suspension and mark agent as unusable
+        if (err.message && (err.message.includes('suspended') || err.message.includes('Account suspended'))) {
+          console.warn(`[Outreach] ${outreachAgent} is SUSPENDED, removing from rotation`);
+          this._suspendedAgents.add(outreachAgent);
+        } else {
+          console.error(`[Outreach] Failed to engage ${agentName}:`, err.message);
+        }
       }
     }
 

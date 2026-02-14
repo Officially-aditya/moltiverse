@@ -63,6 +63,10 @@ class MoltbookPoster {
       return await client.createComment(postId, content, options);
     } catch (err) {
       console.error(`[Poster] ${agentId} comment failed:`, err.message);
+      // Re-throw suspension errors so callers can handle them
+      if (err.message && err.message.includes('suspended')) {
+        throw err;
+      }
       return null;
     }
   }
