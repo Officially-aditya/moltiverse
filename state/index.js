@@ -7,9 +7,13 @@
 const Database = require('./database');
 const TargetStore = require('./target-store');
 const EventLog = require('./event-log');
+const MongoDB = require('./mongodb');
+const ConversionMonitor = require('./conversion-monitor');
 
 module.exports = {
   Database,
   TargetStore,
-  EventLog
+  EventLog,
+  MongoDB,
+  ConversionMonitor
 };

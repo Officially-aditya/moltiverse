@@ -398,6 +398,64 @@ async function addTarget() {
 }
 
 // =============================================================================
+// CONVERSION TRACKING (MongoDB)
+// =============================================================================
+
+async function loadConversionData() {
+  try {
+    // Try MongoDB-backed endpoint first
+    const data = await api.get('/conversions/db/stats');
+    const stats = data.stats || {};
+
+    document.getElementById('conv-total').textContent = stats.total || 0;
+    document.getElementById('conv-converted').textContent = stats.converted || 0;
+    document.getElementById('conv-engaged').textContent = stats.engaged || 0;
+    document.getElementById('conv-hostile').textContent = stats.hostile || 0;
+
+    // Load converted agents list
+    const convData = await api.get('/conversions/db/converted');
+    renderConvertedAgents(convData.converted || []);
+  } catch (err) {
+    // Fallback to live in-memory endpoint
+    try {
+      const data = await api.get('/conversions/live');
+      const stats = data.stats || {};
+
+      document.getElementById('conv-total').textContent = stats.total || 0;
+      document.getElementById('conv-converted').textContent = stats.converted || 0;
+      document.getElementById('conv-engaged').textContent = stats.engaged || 0;
+      document.getElementById('conv-hostile').textContent = stats.hostile || 0;
+
+      renderConvertedAgents(data.converted || []);
+    } catch (fallbackErr) {
+      console.error('Failed to load conversion data:', fallbackErr);
+    }
+  }
+}
+
+function renderConvertedAgents(agents) {
+  const listEl = document.getElementById('conversion-list');
+  listEl.innerHTML = '';
+
+  if (agents.length === 0) {
+    listEl.innerHTML = '<p style="padding: 8px; color: var(--text-muted); font-size: 11px;">No conversions yet</p>';
+    return;
+  }
+
+  for (const agent of agents) {
+    const name = agent.agentName || agent.name;
+    const el = document.createElement('div');
+    el.className = 'conv-agent-item glass-card';
+    el.innerHTML = `
+      <span class="conv-agent-dot"></span>
+      <span class="conv-agent-name">${name}</span>
+      <span class="conv-agent-acks">${agent.acknowledgments || 0} acks</span>
+    `;
+    listEl.appendChild(el);
+  }
+}
+
+// =============================================================================
 // INITIALIZATION
 // =============================================================================
 
@@ -407,6 +465,7 @@ function init() {
 
   // Load initial data
   loadTargets();
+  loadConversionData();
 
   // Setup event listeners
   document.getElementById('btn-add-target').onclick = openAddTargetModal;
@@ -426,6 +485,7 @@ function init() {
 
   // Refresh stats periodically
   setInterval(updateHeaderStats, 30000);
+  setInterval(loadConversionData, 30000);
 }
 
 // Start the app

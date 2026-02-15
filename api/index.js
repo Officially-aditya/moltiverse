@@ -85,8 +85,11 @@ class APIServer {
     // Serve static files for UI
     this.app.use(express.static('ui'));
 
-    // Catch-all for SPA
-    this.app.get('*', (req, res) => {
+    // Catch-all for SPA (skip /api routes so dynamic routes can be added later)
+    this.app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
       res.sendFile('index.html', { root: 'ui' });
     });
   }
