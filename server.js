@@ -15,7 +15,7 @@ require('dotenv').config();
 const { PersuasionEngine } = require('./engine');
 const { AgentManager, DebateLoop, EventHandler, Scheduler } = require('./orchestrator');
 const { createProvider } = require('./llm');
-const { Database, TargetStore, EventLog } = require('./state');
+const { Database, TargetStore, EventLog, MongoDB, ConversionMonitor } = require('./state');
 const APIServer = require('./api');
 
 // New modules
@@ -38,7 +38,11 @@ const config = {
   enableTokenMonitor: process.env.ENABLE_TOKEN_MONITOR !== 'false',
   tokenPollIntervalMs: parseInt(process.env.TOKEN_POLL_INTERVAL_MS) || 60000,
   // Autonomous
-  enableAutonomous: process.env.ENABLE_AUTONOMOUS !== 'false'
+  enableAutonomous: process.env.ENABLE_AUTONOMOUS !== 'false',
+  // MongoDB
+  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
+  mongodbDb: process.env.MONGODB_DB || 'moltiverse',
+  conversionPollMs: parseInt(process.env.CONVERSION_POLL_MS) || 30000
 };
 
 // =============================================================================
@@ -162,6 +166,28 @@ async function initializeSystem() {
   // Wire bridge into listener
   listener.bridge = bridge;
 
+  // 11b. Initialize MongoDB + Conversion Monitor
+  console.log('11b. Initializing MongoDB...');
+  let mongodb = null;
+  let conversionMonitor = null;
+  try {
+    mongodb = new MongoDB({
+      uri: config.mongodbUri,
+      dbName: config.mongodbDb
+    });
+    await mongodb.connect();
+
+    conversionMonitor = new ConversionMonitor({
+      mongodb,
+      outreach,
+      pollIntervalMs: config.conversionPollMs
+    });
+    console.log('   - MongoDB: CONNECTED');
+  } catch (err) {
+    console.warn('   - MongoDB: UNAVAILABLE (' + err.message + ')');
+    console.warn('   - Conversion monitor will be disabled');
+  }
+
   // 12. Create orchestrator bundle
   const orchestrator = {
     agentManager,
@@ -178,8 +204,20 @@ async function initializeSystem() {
     orchestrator
   });
 
-  // Add outreach conversions endpoint
-  apiServer.app.get('/api/conversions', (req, res) => {
+  // Attach conversion monitor to requests for API routes
+  if (conversionMonitor) {
+    apiServer.app.use((req, res, next) => {
+      req.conversionMonitor = conversionMonitor;
+      next();
+    });
+
+    // Mount MongoDB-backed conversion routes
+    const conversionsRouter = require('./api/routes/conversions');
+    apiServer.app.use('/api/conversions', conversionsRouter);
+  }
+
+  // Outreach conversions endpoint (in-memory, for backward compat)
+  apiServer.app.get('/api/conversions/live', (req, res) => {
     const conversions = outreach.getConversions();
     const stats = outreach.getConversionStats();
 
@@ -224,7 +262,9 @@ async function initializeSystem() {
     listener,
     outreach,
     tokenMonitor,
-    bridge
+    bridge,
+    mongodb,
+    conversionMonitor
   };
 
   console.log('================================');
@@ -238,7 +278,7 @@ async function initializeSystem() {
 // =============================================================================
 
 function startAutonomousLoop(system) {
-  const { orchestrator, poster, listener, outreach, tokenMonitor, bridge, agentAccounts } = system;
+  const { orchestrator, poster, listener, outreach, tokenMonitor, bridge, agentAccounts, conversionMonitor } = system;
   const scheduler = orchestrator.scheduler;
 
   console.log('\nStarting autonomous agent loop...');
@@ -338,6 +378,13 @@ function startAutonomousLoop(system) {
   );
 
   console.log('   - Re-engagement job: ACTIVE (24h threshold)');
+
+  // --- Conversion Monitor ---
+  if (conversionMonitor) {
+    conversionMonitor.start();
+    console.log('   - Conversion monitor: ACTIVE (MongoDB sync)');
+  }
+
   console.log('\nAutonomous loop running.\n');
 }
 
@@ -371,10 +418,12 @@ async function main() {
       system.outreach.stop();
       system.tokenMonitor.stop();
       system.orchestrator.scheduler.cancelAll();
+      if (system.conversionMonitor) system.conversionMonitor.stop();
 
       // Stop persistence
       await system.eventLog.stop();
       await system.database.disconnect();
+      if (system.mongodb) await system.mongodb.disconnect();
       await system.apiServer.stop();
 
       process.exit(0);
