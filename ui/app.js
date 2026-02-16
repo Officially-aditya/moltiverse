@@ -301,6 +301,12 @@ async function updateHeaderStats() {
     document.getElementById('stat-targets').textContent = summary.targets || 0;
     document.getElementById('stat-conversions').textContent = summary.conversions || 0;
     document.getElementById('stat-active').textContent = summary.activeConversations || 0;
+
+    // Update outreach-specific stats if elements exist
+    const outreachEl = document.getElementById('stat-outreach-conversions');
+    if (outreachEl) {
+      outreachEl.textContent = summary.outreachConversions || 0;
+    }
   } catch (err) {
     console.error('Failed to load stats:', err);
   }

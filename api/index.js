@@ -38,7 +38,7 @@ class APIServer {
 
     this._setupMiddleware();
     this._setupRoutes();
-    this._setupErrorHandling();
+    // Error handling is deferred — call finalizeRoutes() after mounting additional routes
   }
 
   /**
@@ -110,6 +110,14 @@ class APIServer {
         error: err.message || 'Internal server error'
       });
     });
+  }
+
+  /**
+   * Finalize routes — call after mounting any additional routes from server.js.
+   * Registers 404 and error handlers which must be last.
+   */
+  finalizeRoutes() {
+    this._setupErrorHandling();
   }
 
   /**

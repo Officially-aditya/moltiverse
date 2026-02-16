@@ -214,9 +214,17 @@ router.get('/summary', async (req, res, next) => {
 
     const debateLoop = req.orchestrator?.debateLoop;
 
+    // Merge outreach conversion stats if available
+    const outreachStats = req.outreach?.getConversionStats() || {};
+    const outreachConverted = outreachStats.converted || 0;
+    const engineConversions = tracker.conversions.length;
+
     res.json({
       targets: tracker.targets.size,
-      conversions: tracker.conversions.length,
+      conversions: engineConversions + outreachConverted,
+      engineConversions,
+      outreachConversions: outreachConverted,
+      outreachStats,
       partialConversions: tracker.partialConversions.length,
       activeConversations: debateLoop?.getActiveDebates().length || 0,
       averageComposite: calculateAverageComposite(tracker)

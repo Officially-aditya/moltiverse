@@ -204,13 +204,14 @@ async function initializeSystem() {
     orchestrator
   });
 
-  // Attach conversion monitor to requests for API routes
-  if (conversionMonitor) {
-    apiServer.app.use((req, res, next) => {
-      req.conversionMonitor = conversionMonitor;
-      next();
-    });
+  // Attach outreach + conversion monitor to requests for API routes
+  apiServer.app.use((req, res, next) => {
+    req.outreach = outreach;
+    if (conversionMonitor) req.conversionMonitor = conversionMonitor;
+    next();
+  });
 
+  if (conversionMonitor) {
     // Mount MongoDB-backed conversion routes
     const conversionsRouter = require('./api/routes/conversions');
     apiServer.app.use('/api/conversions', conversionsRouter);
@@ -247,6 +248,9 @@ async function initializeSystem() {
       bountyProgress: `${stats.converted}/3 agents converted`
     });
   });
+
+  // Finalize routes — registers 404/error handlers (must be after all route mounting)
+  apiServer.finalizeRoutes();
 
   // Store all references
   const system = {
@@ -379,12 +383,6 @@ function startAutonomousLoop(system) {
 
   console.log('   - Re-engagement job: ACTIVE (24h threshold)');
 
-  // --- Conversion Monitor ---
-  if (conversionMonitor) {
-    conversionMonitor.start();
-    console.log('   - Conversion monitor: ACTIVE (MongoDB sync)');
-  }
-
   console.log('\nAutonomous loop running.\n');
 }
 
@@ -402,6 +400,12 @@ async function main() {
     // Add demo targets if in development mode
     if (process.env.NODE_ENV !== 'production') {
       seedDemoData(system.engine);
+    }
+
+    // Start conversion monitor unconditionally (MongoDB sync)
+    if (system.conversionMonitor) {
+      system.conversionMonitor.start();
+      console.log('Conversion monitor: ACTIVE (MongoDB sync)');
     }
 
     // Start autonomous agent loop

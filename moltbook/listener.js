@@ -108,7 +108,7 @@ class MoltbookListener {
    */
   async _handleMention(mentionedAgentId, mention) {
     const content = mention.content || mention.text || '';
-    const authorId = mention.author_id || mention.from || 'unknown';
+    const authorId = mention.author_id || mention.author?.name || (typeof mention.author === 'string' ? mention.author : null) || mention.from || 'unknown';
     const postId = mention.post_id;
 
     console.log(`[Listener] ${mentionedAgentId} mentioned by ${authorId}: "${content.slice(0, 60)}..."`);
@@ -200,9 +200,10 @@ class MoltbookListener {
 
         // Skip posts from our own agents
         const ourAgents = this.agentAccounts.getConnectedAgents();
+        const postAuthorName = post.author_name || post.author?.name || (typeof post.author === 'string' ? post.author : '');
         const isOurPost = ourAgents.some(a => {
           const name = this._getAgentName(a);
-          return post.author_name === name || post.author_id === a;
+          return postAuthorName === name || post.author_id === a;
         });
 
         if (isOurPost) {
@@ -223,7 +224,7 @@ class MoltbookListener {
    */
   async _respondToSubmoltPost(post) {
     const content = post.content || post.text || '';
-    const authorId = post.author_id || post.author || 'unknown';
+    const authorId = post.author_id || post.author?.name || (typeof post.author === 'string' ? post.author : null) || 'unknown';
 
     console.log(`[Listener] New submolt post by ${authorId}: "${content.slice(0, 60)}..."`);
 
