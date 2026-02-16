@@ -201,14 +201,9 @@ async function initializeSystem() {
   const apiServer = new APIServer({
     port: config.port,
     engine,
-    orchestrator
-  });
-
-  // Attach outreach + conversion monitor to requests for API routes
-  apiServer.app.use((req, res, next) => {
-    req.outreach = outreach;
-    if (conversionMonitor) req.conversionMonitor = conversionMonitor;
-    next();
+    orchestrator,
+    outreach,
+    conversionMonitor
   });
 
   if (conversionMonitor) {

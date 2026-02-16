@@ -24,6 +24,8 @@ class APIServer {
     this.port = config.port || 3000;
     this.engine = config.engine;
     this.orchestrator = config.orchestrator;
+    this.outreach = config.outreach || null;
+    this.conversionMonitor = config.conversionMonitor || null;
 
     // Create Express app
     this.app = express();
@@ -53,6 +55,8 @@ class APIServer {
       req.engine = this.engine;
       req.orchestrator = this.orchestrator;
       req.wsHandler = this.wsHandler;
+      if (this.outreach) req.outreach = this.outreach;
+      if (this.conversionMonitor) req.conversionMonitor = this.conversionMonitor;
       next();
     });
 
