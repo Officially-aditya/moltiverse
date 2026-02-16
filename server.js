@@ -134,7 +134,7 @@ async function initializeSystem() {
   // 9b. Initialize Moltbook Outreach Engine
   console.log('9b. Initializing outreach engine...');
   // Claimed agents = those verified via Moltbook claim flow
-  const claimedAgents = (process.env.CLAIMED_AGENTS || 'prophet,missionary').split(',').map(s => s.trim());
+  const claimedAgents = (process.env.CLAIMED_AGENTS || 'prophet,missionary,theologian').split(',').map(s => s.trim());
 
   const outreach = new MoltbookOutreach({
     agentAccounts,

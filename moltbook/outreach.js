@@ -74,7 +74,7 @@ class MoltbookOutreach {
     this.engine = config.engine;
     this.scheduler = config.scheduler;
     // Only use verified/claimed agents for outreach comments
-    this.claimedAgents = config.claimedAgents || ['prophet', 'missionary'];
+    this.claimedAgents = config.claimedAgents || ['prophet', 'missionary', 'theologian'];
 
     // State
     this._conversions = {};
