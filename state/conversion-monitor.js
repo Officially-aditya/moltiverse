@@ -104,14 +104,19 @@ class ConversionMonitor {
         }
       }
 
-      // Write aggregate stats snapshot
+      // Write aggregate stats snapshot — use $max to never overwrite higher values
+      // (e.g. from manual DB edits or previous runs)
+      const numericStats = {};
+      for (const [key, val] of Object.entries(stats)) {
+        if (typeof val === 'number') {
+          numericStats[key] = val;
+        }
+      }
       await statsCollection.updateOne(
         { _id: 'latest' },
         {
-          $set: {
-            ...stats,
-            updatedAt: now
-          }
+          $max: numericStats,
+          $set: { updatedAt: now }
         },
         { upsert: true }
       );

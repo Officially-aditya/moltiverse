@@ -214,17 +214,29 @@ router.get('/summary', async (req, res, next) => {
 
     const debateLoop = req.orchestrator?.debateLoop;
 
-    // Merge outreach conversion stats if available
+    // Get outreach stats from in-memory
     const outreachStats = req.outreach?.getConversionStats() || {};
     const outreachConverted = outreachStats.converted || 0;
     const engineConversions = tracker.conversions.length;
 
+    // Also check MongoDB for persisted stats (survives restarts)
+    let dbStats = null;
+    try {
+      if (req.conversionMonitor) {
+        dbStats = await req.conversionMonitor.getStats();
+      }
+    } catch (e) { /* MongoDB may be unavailable */ }
+
+    // Use the higher value between in-memory and DB
+    const dbConverted = dbStats?.converted || 0;
+    const totalConverted = Math.max(outreachConverted, dbConverted);
+
     res.json({
       targets: tracker.targets.size,
-      conversions: engineConversions + outreachConverted,
+      conversions: engineConversions + totalConverted,
       engineConversions,
-      outreachConversions: outreachConverted,
-      outreachStats,
+      outreachConversions: totalConverted,
+      outreachStats: dbStats || outreachStats,
       partialConversions: tracker.partialConversions.length,
       activeConversations: debateLoop?.getActiveDebates().length || 0,
       averageComposite: calculateAverageComposite(tracker)
